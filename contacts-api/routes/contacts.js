@@ -1,5 +1,5 @@
 import express from 'express';
-import multer from 'multer';
+import multer from 'multer';//IMPORT LIBRARIES - THESE MUST BE INSTALLED IN TERMINAL FIRST. INSTALL IN PROJECT FOLDER.
 
 const router = express.Router();
 
@@ -17,16 +17,16 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage});
 // MULTERSETUP ENDS
 
-router.get('/', (req, res) => {
-  res.send('Contacts route test');
-});
+// router.get('/', (req, res) => {
+//   res.send('Contacts route test');
+// });
 
-// Get all contacts
+// GET ALL CONTACTS
 router.get('/all', (req, res) => {
   res.send('All contacts');
 });
 
-// Get a contact by id
+// GET A CONTACT BY ID
 router.get('/:id', (req, res) => {
   const id = req.params.id;
 
@@ -39,7 +39,7 @@ router.get('/:id', (req, res) => {
   res.send('Contact by id ' + id);
 });
 
-// add a new contact
+// ADD A NEW CONTACT
 router.post('/create', upload.single('image'), (req,res) => {
   const { firstName, lastName, phone, email } = req.body;
   const fileName = req.file ? req.file.filename : null;
@@ -63,7 +63,7 @@ router.post('/create', upload.single('image'), (req,res) => {
   res.send('Add a new contact')
 });
 
-// update a contact by id
+// UPDATE A CONTACT BY ID
 router.put('/update/:id', upload.single('edit'),(req,res) => {
   const id = req.params.id;
   
@@ -71,12 +71,11 @@ router.put('/update/:id', upload.single('edit'),(req,res) => {
     console.log('File uploaded ' + req.file.filename);
   }
 
-// to-do: verify :id is a number
-
+// TO-DO: VERIFY :ID IS A NUMBER
   res.send('Update a contact by id ' + id)
 });
 
-// delete a contact by id
+// DELETE A CONTACT BY ID
 router.delete('/delete/:id',(req,res) => {
   const id = req.params.id;
 
