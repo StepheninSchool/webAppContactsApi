@@ -1,9 +1,10 @@
 import express from 'express';
 import multer from 'multer';//IMPORT LIBRARIES - THESE MUST BE INSTALLED IN TERMINAL FIRST. INSTALL IN PROJECT FOLDER.
 
+
 const router = express.Router();
 
-//MULTERSETUP
+// MULTERSETUP
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'public/images/'); // save uploaded files in `public/images` folder
@@ -17,9 +18,9 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage});
 // MULTERSETUP ENDS
 
-// router.get('/', (req, res) => {
-//   res.send('Contacts route test');
-// });
+router.get('/', (req, res) => {
+  res.send('Contacts route test');
+});
 
 // GET ALL CONTACTS
 router.get('/all', (req, res) => {
@@ -30,13 +31,9 @@ router.get('/all', (req, res) => {
 router.get('/:id', (req, res) => {
   const id = req.params.id;
 
-  res.send('Contact by id' + id)
+  //TO-DO: VERIFY :ID IS A NUMBER
 
-  //to-do:verify :id is a number
-
-  // to do get contact record in database by id
-
-  res.send('Contact by id ' + id);
+  res.send('Contact by id  ' + id);
 });
 
 // ADD A NEW CONTACT
@@ -52,16 +49,11 @@ router.post('/create', upload.single('image'), (req,res) => {
     fileName: fileName,
   }
 
+  // Use prisma to save new contact in database
+
   res.json(contact);
-
-  console.log('My new contact: ${firstName} ${lastName} ${fileName}')
-
-  if(req.file){
-    console.log('File Uploaded ' + req.file.filename);
-  }
-
-  res.send('Add a new contact')
 });
+  
 
 // UPDATE A CONTACT BY ID
 router.put('/update/:id', upload.single('edit'),(req,res) => {
@@ -71,7 +63,8 @@ router.put('/update/:id', upload.single('edit'),(req,res) => {
     console.log('File uploaded ' + req.file.filename);
   }
 
-// TO-DO: VERIFY :ID IS A NUMBER
+  // TO-DO: VERIFY :ID IS A NUMBER
+
   res.send('Update a contact by id ' + id)
 });
 
