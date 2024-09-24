@@ -41,13 +41,23 @@ router.post('/create', upload.single('image'), (req,res) => {
   const { firstName, lastName, phone, email } = req.body;
   const fileName = req.file ? req.file.filename : null;
 
-  const contact = {
+  //validate inputs
+  if(!firstName || !lastName || !phone || !email) {
+    //to-do: delete uploaded file on value errors
+
+    res.status(400).send('Required fields must have a value.');
+    return;
+  }
+  // to-do: validate proper email, proper phone number, only .jpg/.png/.gig/,file size
+  const contact = await Prisma.contact.create({
+    data:{
     firstName: firstName,
     lastName: lastName,
     phone: phone,
     email: email,
     fileName: fileName,
   }
+});
 
   // Use prisma to save new contact in database
 
