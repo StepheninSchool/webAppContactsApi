@@ -85,11 +85,23 @@ router.post('/create', upload.single('image'), async (req, res) => {
 router.put('/update/:id', upload.single('image'), (req, res) => {
   const id = req.params.id;
 
-  if(req.file){
-    console.log('File uploaded ' + req.file.filename);
-  }
+  // capture the inputs
+
+  // validate id
+
+  // validate required fields
+
+  // Find the contact by id (if not found, return 404)
+
+  // store the filename in a variable
   
-  // to-do: verify :id is a number
+  // if file was uploaded, save the filename, delete old image file.  If not, save the old filename.
+  // make a variable to keep filename information, then delete it.  but if not, we dont want to leave it null, 
+  // we want to plug in the original filename.
+  // Update the database record with prisma(saving either the old or new filename)
+
+  
+
 
   res.send('Update a contact by ' + id);
 });
