@@ -4,11 +4,6 @@ import { PrismaClient } from '@prisma/client';
 
 const router = express.Router();
 
-// Prisma setup
-const prisma = new PrismaClient({
-  log: ['query', 'info', 'warn', 'error'],
-});
-
 // Multer setup
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -20,17 +15,16 @@ const storage = multer.diskStorage({
     cb(null, uniqueFilename);
   }
 });
-
 const upload = multer({ storage: storage });
-  
 
- //
- // Routes
- // 
+// Prisma setup
+const prisma = new PrismaClient({
+  log: ['query', 'info', 'warn', 'error'],
+});
 
 // Get all contacts
-router.get('/all', async (req, res) => {
-  const contacts = await prisma.contact.findMany(); 
+router.get('/all', async (req, res) => { 
+  const contacts = await prisma.contact.findMany();
 
   res.json(contacts);
 });
@@ -39,81 +33,75 @@ router.get('/all', async (req, res) => {
 router.get('/get/:id', async (req, res) => {
   const id = req.params.id;
 
-  // Validate id is a number
+  // Validate id
   if(isNaN(id)){
-    return res.status(400).json({ message: 'Invalid contact ID.'});    
+    res.status(400).send('Invalid contact id.');
+    return;
   }
 
-  // By ID
   const contact = await prisma.contact.findUnique({
     where: {
       id: parseInt(id),
     },
   });
 
-  if(contact) {
+  if(contact){
     res.json(contact);
-  } 
-  else {
-    res.status(404).json({ message: 'Contact not found.'});
+  } else {
+    res.status(404).send('Contact not found.');
   }  
 });
 
-// Add a new contact (with Multer)
+// Add a new contact
 router.post('/create', upload.single('image'), async (req, res) => {
+  const { firstName, lastName, phone, email, title } = req.body;  
   const filename = req.file ? req.file.filename : null;
-  const { firstName, lastName, email, phone, title } = req.body;
+  
+  // Validate inputs
+  if(!firstName || !lastName || !phone || !email) {
+    // to-do: delete uploaded file
 
-  if(!firstName || !lastName || !email || !phone) {
-    // to-do:delete uploaded file
-    return res.status(400).json({message: 'Required fields must have a value.'});
+    res.status(400).send('Required fields must have a value.');
+    return;
   }
+
+  // to-do: validate proper email, proper phone number, only .jpg/.png/.gig/, file size limit (5MB)
 
   const contact = await prisma.contact.create({
     data: {
       firstName: firstName,
       lastName: lastName,
-      email: email,
-      phone: phone,
       title: title,
-      filename: filename
-    },
+      phone: phone,
+      email: email,
+      filename: filename,
+    }
   });
 
   res.json(contact);
 });
 
-// Update a contact by id (with Multer)
+// Update a contact by id
 router.put('/update/:id', upload.single('image'), (req, res) => {
   const id = req.params.id;
 
-  // capture the remaining inputs
+  if(req.file){
+    console.log('File uploaded ' + req.file.filename);
+  }
+  
+  // to-do: verify :id is a number
 
-  // validate the inputs
-
-  // get contact by id. return 404 if not found.
-
-  // if image file is uploaded: get the filename to save in db. delete the old image file. set the filename to newfilename
-  // if image file NOT uploaded: when updating record with prisma, set the filename to oldfilename
-
-  // update record in the database (ensuring filename is new or old name)
-
-  res.send('Update by id ' + id);
+  res.send('Update a contact by ' + id);
 });
 
-// Delete a contact by id
+// Delete a contact id
 router.delete('/delete/:id', (req, res) => {
   const id = req.params.id;
 
-  // validate the input
+  // to-do: verify :id is a number
 
-  // get contact by id. return 404 if not found.
-
-  // delete the image file
-
-  // delete the contact in database
-
-  res.send('Delete by id ' + id);
+  res.send('Delete a contact by id ' + id);
 });
+
 
 export default router;
