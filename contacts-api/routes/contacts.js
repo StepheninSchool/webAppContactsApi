@@ -85,23 +85,44 @@ router.post('/create', upload.single('image'), async (req, res) => {
 router.put('/update/:id', upload.single('image'), (req, res) => {
   const id = req.params.id;
 
-  // capture the inputs
+ // capture the inputs
 
-  // validate id
+  const { firstName, lastName, phone, email,title } = req.body;
+  const newFile = req.file ? req.file.filename : null;
 
-  // validate required fields
+ // validate the id
 
-  // Find the contact by id (if not found, return 404)
+  if(isNaN(id)) {
+    return res.status.(400).send('Invalid contact ID.')
+  }
 
-  // store the filename in a variable
-  
-  // if file was uploaded, save the filename, delete old image file.  If not, save the old filename.
-  // make a variable to keep filename information, then delete it.  but if not, we dont want to leave it null, 
-  // we want to plug in the original filename.
-  // Update the database record with prisma(saving either the old or new filename)
+ // validate required fields
 
-  
+  if (!firstName || !lastName || !phone || !email) {
+    return res.status(400).send('All fields must contain a value.')
+  }
 
+  //find the contact by id
+  try {
+    const contact = await prisma.contact.findUnique({
+      where: { id: parseInt(id) },
+    });
+
+    if (!contact) {
+      return res.status(404).send('Contact not found.');
+    }
+
+    //store the filename in a variable
+    const oldFileName = contact.filename;
+
+    // If a new file was uploaded, delete the old one
+    if (newFile && oldFileName) 
+
+ // store filename in a variable
+
+ // if file was uploaded, save that filename, and delete the old file. If not, save the old filename
+
+ // Update the database record with prisma (saving either the old or new filename)
 
   res.send('Update a contact by ' + id);
 });
@@ -110,7 +131,15 @@ router.put('/update/:id', upload.single('image'), (req, res) => {
 router.delete('/delete/:id', (req, res) => {
   const id = req.params.id;
 
-  // to-do: verify :id is a number
+  // verify id is a number
+
+
+
+  // Find the contact by id (if not found, return 404)
+
+  // delete the record with prisma
+
+  // delete the file (if contact has one)
 
   res.send('Delete a contact by id ' + id);
 });
