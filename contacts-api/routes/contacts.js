@@ -81,19 +81,19 @@ router.post('/create', upload.single('image'), async (req, res) => {
   res.json(contact);
 });
 
-// Update a contact by id
-router.put('/update/:id', upload.single('image'), (req, res) => {
+// UPDATE A CONTACT BY ID
+router.put('/update/:id', upload.single('image'), async (req, res) => {
   const id = req.params.id;
 
  // capture the inputs
 
-  const { firstName, lastName, phone, email,title } = req.body;
+  const { firstName, lastName, phone, email, title } = req.body;
   const newFile = req.file ? req.file.filename : null;
 
  // validate the id
 
   if(isNaN(id)) {
-    return res.status.(400).send('Invalid contact ID.')
+    return res.status(400).send('Invalid contact ID.')
   }
 
  // validate required fields
@@ -116,13 +116,39 @@ router.put('/update/:id', upload.single('image'), (req, res) => {
     const oldFileName = contact.filename;
 
     // If a new file was uploaded, delete the old one
-    if (newFile && oldFileName) 
+    if (newFile && oldFileName) {
+      const oldFilePath = 'public/images/${oldFilename}';
+      try {
+        await FileSystem.unlink(oldFilePath); //delete the old file
+        console.log('Old file ${oldFilePath} delete successfully.');
+      } catch (error){
+        console.error('Error deleting old file: ${error}');
+      }
+    }
 
- // store filename in a variable
+  // if file was uploaded, save that filename, and delete the old file. If not, save the old filename
+    const updatedContact = await prisma.contact.update({
+      where: { id: parseInt(id) },
+      data: {
+        firstName: firstName,
+        lastName: lastName,
+        phone: phone,
+        email: email,
+        title: title,
+        filename: newFile ? newFile : oldFileName, // save the new file if uploaded, otherwise keep the old name.
+      },
+       
+    });
 
- // if file was uploaded, save that filename, and delete the old file. If not, save the old filename
+    //return the updated contact
+    res.json(updatedContact);
 
- // Update the database record with prisma (saving either the old or new filename)
+  } catch(error){
+    console.error('error updating contact: ${error}');
+    res.status(500).send('An error occurred while updating the contact.');
+  }
+
+ 
 
   res.send('Update a contact by ' + id);
 });
