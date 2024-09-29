@@ -98,7 +98,7 @@ router.put('/update/:id', upload.single('image'), async (req, res) => {
 
   // validate required fields
 
-  if (!firstName || !lastName || !phone || !email) {
+  if (!firstName && !lastName && !phone && !email && !title) {
     return res.status(400).send('All fields must contain a value.')
   }
 
@@ -157,6 +157,7 @@ router.delete('/delete/:id', (req, res) => {
   const id = req.params.id;
 
   // verify id is a number
+  if (NaN)
 
 
 
