@@ -98,7 +98,7 @@ router.put('/update/:id', upload.single('image'), async (req, res) => {
 
   // validate required fields
 
-  if (!firstName && !lastName && !phone && !email && !title) {
+  if (!firstName && !lastName && !phone && !email && !title && image) {
     return res.status(400).send('All fields must contain a value.')
   }
 
@@ -153,16 +153,44 @@ router.put('/update/:id', upload.single('image'), async (req, res) => {
 });
 
 // Delete a contact id
-router.delete('/delete/:id', (req, res) => {
+router.delete('/delete/:id', async (req, res) => {
   const id = req.params.id;
 
   // verify id is a number
-  if (NaN)
-
-
-
+  if (isNaN(id)) {
+    return res.status(400).send('Invalid contact ID.');
+    }
+  
   // Find the contact by id (if not found, return 404)
+    try {
+      const contact = await prisma.contact.findUnique({
+        where: { id: parseInt(id) }
+      });
 
+      if (!contact){
+        return res.status(404).send('Contact not found.');
+      }
+      
+      //store the filename in a variable
+      const oldFileName = contact.filename;
+
+      //delete the image file (if there is one)
+      if (oldFileName){
+        const oldFilePath = 'public/images/${oldFileName}';
+        try {
+          //use the filesystem module from node to delete the file
+          const fs = require('fs');
+          fs.unlinkSync(oldFilePath); // delete the file;
+          return res.status(200).end('File ${oldFilePath} deleted successfully.')
+        } catch (error){
+          console.error('Error deleting file: ${error}');
+        }
+      }
+
+      //delete the record from the database with prisma
+      
+
+    }
   // delete the record with prisma
 
   // delete the file (if contact has one)
