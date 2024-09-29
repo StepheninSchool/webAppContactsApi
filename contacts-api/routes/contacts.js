@@ -188,14 +188,17 @@ router.delete('/delete/:id', async (req, res) => {
       }
 
       //delete the record from the database with prisma
-      
+      await prisma.contact.delete({
+        where: { id: parseInt(id) },
+      });
 
+      //send a message to confirm contact deleted
+      res.send('Contact with ID ${id} deleted successfully');
+    } catch (error) {
+      console.error('Error deleting contact: ${error}');
+      res.status(500).send('An error occrured while deleting the contact.');
     }
-  // delete the record with prisma
-
-  // delete the file (if contact has one)
-
-  res.send('Delete a contact by id ' + id);
+  
 });
 
 
