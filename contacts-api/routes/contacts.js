@@ -117,12 +117,12 @@ router.put('/update/:id', upload.single('image'), async (req, res) => {
 
     // If a new file was uploaded, delete the old one
     if (newFile && oldFileName) {
-      const oldFilePath = 'public/images/${oldFilename}';
+      const oldFilePath = `public/images/${oldFilename}`;
       try {
         await FileSystem.unlink(oldFilePath); //delete the old file
-        console.log('Old file ${oldFilePath} delete successfully.');
+        console.log(`Old file ${oldFilePath} delete successfully.`);
       } catch (error) {
-        console.error('Error deleting old file: ${error}');
+        console.error(`Error deleting old file: ${error}`);
       }
     }
 
@@ -144,7 +144,7 @@ router.put('/update/:id', upload.single('image'), async (req, res) => {
     res.json(updatedContact);
 
   } catch (error) {
-    console.error('error updating contact: ${error}');
+    console.error(`error updating contact: ${error}`);
     res.status(500).send('An error occurred while updating the contact.');
   }
 
@@ -181,9 +181,9 @@ router.delete('/delete/:id', async (req, res) => {
           //use the filesystem module from node to delete the file
           const fs = require('fs');
           fs.unlinkSync(oldFilePath); // delete the file;
-          return res.status(200).end('File ${oldFilePath} deleted successfully.')
+          return res.status(200).end(`File ${oldFilePath} deleted successfully.`)
         } catch (error){
-          console.error('Error deleting file: ${error}');
+          console.error(`Error deleting file: ${error}`);
         }
       }
 
@@ -193,9 +193,9 @@ router.delete('/delete/:id', async (req, res) => {
       });
 
       //send a message to confirm contact deleted
-      res.send('Contact with ID ${id} deleted successfully');
+      res.send(`Contact with ID ${id} deleted successfully`);
     } catch (error) {
-      console.error('Error deleting contact: ${error}');
+      console.error(`Error deleting contact: ${error}`);
       res.status(500).send('An error occrured while deleting the contact.');
     }
   
