@@ -1,5 +1,6 @@
 import express from 'express';
 import contactsRouter from './routes/contacts.js';
+import cors from 'cors';
 
 const port = process.env.PORT || 3000;
 const app = express();
